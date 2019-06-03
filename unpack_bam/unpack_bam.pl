@@ -21,7 +21,7 @@ use Cwd qw( abs_path ); # Somewhat safe way to convert a relative path to an abs
 # Use the CMO JSON to pull paths to tools and data we'll need
 my $java_bin = "java";
 my $samtools_bin = "samtools";
-my $picard_jar = "/opt/picard.jar";
+my $picard_jar = "/opt/common/CentOS_6-dev/picard/v2.13/picard.jar";
 
 # Check for missing or crappy arguments
 unless( @ARGV and $ARGV[0]=~m/^-/ ) {
