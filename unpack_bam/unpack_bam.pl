@@ -17,6 +17,7 @@ use Getopt::Long qw( GetOptions ); # Helps parse user provided arguments
 use Pod::Usage qw( pod2usage ); # Helps us generate nicely formatted help/man content
 use JSON::Parse qw( parse_json_safe ); # Helps us parse JSON files
 use Cwd qw( abs_path ); # Somewhat safe way to convert a relative path to an absolute path
+use Cwd qw( getcwd ); # Need working directory
 use File::Basename; # Needed to create somewhat unique pathnames
 
 # Use the CMO JSON to pull paths to tools and data we'll need
@@ -128,8 +129,8 @@ warn "STATUS: Parsed " . scalar( @rg_lines ) . " \@RG lines from BAM and wrote t
 
 # Unless FASTQs already exist, use Picard to revert BQ scores, and create FASTQs; then zip em up
 unless( $skip_picard ) {
-    my $temp_filename = basename($bam_file).".temp_file";
-    my $cmd = "$java_bin -Xmx6g -jar $picard_jar RevertSam TMP_DIR=/scratch INPUT=$bam_file OUTPUT=$temp_filename SANITIZE=true COMPRESSION_LEVEL=0 VALIDATION_STRINGENCY=SILENT; java -Xmx6g -jar $picard_jar SamToFastq TMP_DIR=/scratch INPUT=$temp_filename OUTPUT_PER_RG=true RG_TAG=$rg_tag OUTPUT_DIR=$output_dir VALIDATION_STRINGENCY=SILENT";
+    my $temp_filename = getcwd."/".basename($bam_file).".temp_file";
+    my $cmd = "$java_bin -Xmx6g -jar $picard_jar RevertSam TMP_DIR=$output_dir INPUT=$bam_file OUTPUT=$temp_filename SANITIZE=true COMPRESSION_LEVEL=0 VALIDATION_STRINGENCY=SILENT; java -Xmx6g -jar $picard_jar SamToFastq TMP_DIR=$output_dir INPUT=$temp_filename OUTPUT_PER_RG=true RG_TAG=$rg_tag OUTPUT_DIR=$output_dir VALIDATION_STRINGENCY=SILENT";
     print "RUNNING: $cmd\n";
     print `$cmd`;
     print "RUNNING: gzip $output_dir/*.fastq\n";
