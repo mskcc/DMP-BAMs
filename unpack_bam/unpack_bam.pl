@@ -127,7 +127,7 @@ warn "STATUS: Parsed " . scalar( @rg_lines ) . " \@RG lines from BAM and wrote t
 
 # Unless FASTQs already exist, use Picard to revert BQ scores, and create FASTQs; then zip em up
 unless( $skip_picard ) {
-    my $cmd = "$java_bin -Xmx6g -jar $picard_jar RevertSam TMP_DIR=/scratch INPUT=$bam_file OUTPUT=/dev/stdout SANITIZE=true COMPRESSION_LEVEL=0 VALIDATION_STRINGENCY=SILENT | java -Xmx6g -jar $picard_jar SamToFastq TMP_DIR=/scratch INPUT=/dev/stdin OUTPUT_PER_RG=true RG_TAG=$rg_tag OUTPUT_DIR=$output_dir VALIDATION_STRINGENCY=SILENT";
+    my $cmd = "$java_bin -Xmx6g -jar $picard_jar RevertSam TMP_DIR=/scratch INPUT=$bam_file OUTPUT=$bam_file.temp_file SANITIZE=true COMPRESSION_LEVEL=0 VALIDATION_STRINGENCY=SILENT; java -Xmx6g -jar $picard_jar SamToFastq TMP_DIR=/scratch INPUT=$bam_file.temp_file OUTPUT_PER_RG=true RG_TAG=$rg_tag OUTPUT_DIR=$output_dir VALIDATION_STRINGENCY=SILENT";
     print "RUNNING: $cmd\n";
     print `$cmd`;
     print "RUNNING: gzip $output_dir/*.fastq\n";
