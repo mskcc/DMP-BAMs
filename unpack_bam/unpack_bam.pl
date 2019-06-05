@@ -25,6 +25,9 @@ my $java_bin = "java";
 my $samtools_bin = "samtools";
 my $picard_jar = "/opt/common/CentOS_6-dev/picard/v2.13/picard.jar";
 
+# Default temp directory for compatibility with old usage
+my $tmp_dir = "/scratch"
+
 # Check for missing or crappy arguments
 unless( @ARGV and $ARGV[0]=~m/^-/ ) {
     pod2usage( -verbose => 0, -message => "$0: Missing or invalid arguments!\n", -exitval => 2 );
@@ -39,6 +42,7 @@ GetOptions(
     'input-bam=s' => \$bam_file,
     'output-dir=s' => \$output_dir,
     'sample-id=s' => \$sample_id,
+    'tmp-dir=s' => \$tmp_dir,
     'picard-jar=s' => \$picard_jar
 ) or pod2usage( -verbose => 1, -input => \*DATA, -exitval => 2 );
 pod2usage( -verbose => 1, -input => \*DATA, -exitval => 0 ) if( $help );
@@ -130,7 +134,7 @@ warn "STATUS: Parsed " . scalar( @rg_lines ) . " \@RG lines from BAM and wrote t
 # Unless FASTQs already exist, use Picard to revert BQ scores, and create FASTQs; then zip em up
 unless( $skip_picard ) {
     my $temp_filename = getcwd."/".basename($bam_file).".temp_file";
-    my $cmd = "$java_bin -Xmx6g -jar $picard_jar RevertSam TMP_DIR=$output_dir INPUT=$bam_file OUTPUT=$temp_filename SANITIZE=true COMPRESSION_LEVEL=0 VALIDATION_STRINGENCY=SILENT; java -Xmx6g -jar $picard_jar SamToFastq TMP_DIR=$output_dir INPUT=$temp_filename OUTPUT_PER_RG=true RG_TAG=$rg_tag OUTPUT_DIR=$output_dir VALIDATION_STRINGENCY=SILENT";
+    my $cmd = "$java_bin -Xmx6g -jar $picard_jar RevertSam TMP_DIR=$tmp_dir INPUT=$bam_file OUTPUT=$temp_filename SANITIZE=true COMPRESSION_LEVEL=0 VALIDATION_STRINGENCY=SILENT; java -Xmx6g -jar $picard_jar SamToFastq TMP_DIR=$tmp_dir INPUT=$temp_filename OUTPUT_PER_RG=true RG_TAG=$rg_tag OUTPUT_DIR=$output_dir VALIDATION_STRINGENCY=SILENT";
     print "RUNNING: $cmd\n";
     print `$cmd`;
     print "RUNNING: gzip $output_dir/*.fastq\n";

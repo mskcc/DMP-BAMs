@@ -27,6 +27,12 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--output-dir'
+  - id: tmp_dir
+    type: string
+    default: "/tmp"
+    inputBinding:
+      position: 0
+      prefix: '--tmp-dir'
 outputs:
   - id: output
     type: 'File[]'
