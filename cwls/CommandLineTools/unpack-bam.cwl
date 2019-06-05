@@ -37,3 +37,6 @@ requirements:
   - class: DockerRequirement
     dockerPull: 'mskcc/unpack_bam:0.1.0'
   - class: InlineJavascriptRequirement
+  - class: ResourceRequirement
+    ramMin: 8000
+    coresMin: 4
