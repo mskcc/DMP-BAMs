@@ -35,9 +35,9 @@ inputs:
       prefix: '--tmp-dir'
 outputs:
   - id: output
-    type: 'File[]'
+    type: 'Directory'
     outputBinding:
-      glob: $(inputs.output_dir)/*.*
+      glob: $(inputs.output_dir)
 label: unpack-bam
 requirements:
   - class: DockerRequirement
