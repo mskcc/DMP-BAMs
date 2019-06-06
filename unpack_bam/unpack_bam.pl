@@ -7,6 +7,8 @@
 # purpose: (1) Extract flowcell/lane information from first read ID of the @RG using @RG's ID; (2) Picard uses PU as fastq files's name if PU does not following the standard format. We need to consider this situation.
 # modified on June 3, 2019
 # purpose: (1) Re-set default path of java, samtools, and picard's jar file; (2) Added input option of "picard-jar"
+# modified on June 6, 2019
+# purpose: (1) Added option to set temp directory; (2) Changed pipe and /dev/stdout /dev/stdin logic in picard step
 # 
 # AUTHOR: Cyriac Kandoth (ckandoth@gmail.com); Zuojian Tang (zuojian.tang@gmail.com); Allan Bolipata (allan.bolipata@gmail.com)
 
@@ -133,7 +135,7 @@ warn "STATUS: Parsed " . scalar( @rg_lines ) . " \@RG lines from BAM and wrote t
 
 # Unless FASTQs already exist, use Picard to revert BQ scores, and create FASTQs; then zip em up
 unless( $skip_picard ) {
-    my $temp_filename = getcwd."/".basename($bam_file).".temp_file";
+    my $temp_filename = $output_dir."/".basename($bam_file).".temp_file";
     my $cmd = "$java_bin -Xmx6g -jar $picard_jar RevertSam TMP_DIR=$tmp_dir INPUT=$bam_file OUTPUT=$temp_filename SANITIZE=true COMPRESSION_LEVEL=0 VALIDATION_STRINGENCY=SILENT; java -Xmx6g -jar $picard_jar SamToFastq TMP_DIR=$tmp_dir INPUT=$temp_filename OUTPUT_PER_RG=true RG_TAG=$rg_tag OUTPUT_DIR=$output_dir VALIDATION_STRINGENCY=SILENT";
     print "RUNNING: $cmd\n";
     print `$cmd`;
@@ -183,6 +185,7 @@ __DATA__
  --input-bam      Path to the BAM file to unpack
  --output-dir     Path to output directory where FASTQs and readgroup info files will be stored
  --sample-id      Sample ID for the BAM. Any sample ID in the readgroup data is ignored
+ --tmp-dir        Path for temp directory used by picard; defaults to "/scratch"
  --picard-jar     Path to the Picard Jar file
  --help           Print a brief help message and quit
  --man            Print the detailed manual
