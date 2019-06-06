@@ -26,7 +26,7 @@ my $samtools_bin = "samtools";
 my $picard_jar = "/opt/common/CentOS_6-dev/picard/v2.13/picard.jar";
 
 # Default temp directory for compatibility with old usage
-my $tmp_dir = "/scratch"
+my $tmp_dir = "/scratch";
 
 # Check for missing or crappy arguments
 unless( @ARGV and $ARGV[0]=~m/^-/ ) {
